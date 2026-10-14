@@ -84,6 +84,6 @@ setup(
     platforms='POSIX',
     classifiers=PYP_CLASSIFIERS,
     packages=find_packages(exclude=['tests', 'tests.*', '*.*.pyc', '*.pyo']),
-    install_requires=['ats-utilities', 'pyserial'],
+    install_requires=['pyserial'],
     package_data={'scaracom': find_package_data('scaracom')},
 )

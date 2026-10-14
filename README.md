@@ -64,9 +64,8 @@ python3 setup.py install --record files.txt
 
 ### 📦 Dependencies
 
-**scaracom** requires the following external packages:
-* `ats-utilities`
-* `pyserial`
+**scaracom** is extremely lightweight and requires only:
+* `pyserial` (in addition to Python standard library built-ins)
 
 ### 📁 Tool structure
 
