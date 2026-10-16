@@ -21,6 +21,7 @@ Info
 
 from __future__ import annotations
 
+from threading import Event
 from typing import Type
 
 from scaracom.bridge.coordinator.dependencies import CoordinatorDependencies
@@ -30,16 +31,18 @@ from scaracom.bridge.dependencies import BridgeDependencies
 from scaracom.bridge.listener.factory import ListenerHolderFactory
 from scaracom.bridge.listener.iholder import ITransportListenerHolder
 from scaracom.bridge.provides import BridgeProvides
+from scaracom.bridge.receiver.dependencies import ReceiverDependencies
+from scaracom.bridge.receiver.factory import ReceiverFactory
+from scaracom.bridge.receiver.ireceiver import ITransportReceiver
 from scaracom.bridge.transceiver.dependencies import TransceiverDependencies
 from scaracom.bridge.transceiver.factory import TransceiverFactory
 from scaracom.bridge.transceiver.ichannel import IRawChannel
-from scaracom.bridge.worker.factory import ReaderWorkerFactory
 
 __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -79,11 +82,21 @@ class BridgeFactory:
             )
         )
 
+        stop_event: Event = Event()
+        receiver: ITransportReceiver = ReceiverFactory.create(
+            ReceiverDependencies(
+                transport=dependencies.transport,
+                listener=listener_holder,
+                stop_event=stop_event,
+            )
+        )
+
         coordinator: IConnectionCoordinator = CoordinatorFactory.create(
             CoordinatorDependencies(
                 transport=dependencies.transport,
                 listener_holder=listener_holder,
-                worker_factory=ReaderWorkerFactory,
+                receiver=receiver,
+                stop_event=stop_event,
             )
         )
 

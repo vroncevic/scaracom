@@ -22,15 +22,18 @@ Info
 from __future__ import annotations
 
 from unittest import TestCase
+from unittest import main
+from unittest.mock import Mock
 
 from scaracom.bridge.listener.holder import TransportListenerHolder
 from scaracom.bridge.listener.iholder import ITransportListenerHolder
+from scaracom.bridge.listener.itransport_listener import ITransportListener
 
 __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -44,12 +47,20 @@ class TransportListenerHolderProtocolTestCase(TestCase):
     def test_holder_implements_protocol(self) -> None:
         '''
             Verifies TransportListenerHolder satisfies ITransportListenerHolder.
+
+            :exceptions: None.
         '''
-        holder = TransportListenerHolder()
+        holder = TransportListenerHolder(Mock(spec=ITransportListener))
         self.assertTrue(isinstance(holder, ITransportListenerHolder))
 
     def test_non_holder_fails_protocol(self) -> None:
         '''
             Verifies non-conforming object fails ITransportListenerHolder check.
+
+            :exceptions: None.
         '''
         self.assertFalse(isinstance(object(), ITransportListenerHolder))
+
+
+if __name__ == '__main__':
+    main()

@@ -21,21 +21,20 @@ Info
 
 from __future__ import annotations
 
-from threading import Event, Thread
-from typing import Final, Type
+from threading import Event, RLock, Thread
+from typing import Final
 
 from scaracom.bridge.coordinator.dependencies import CoordinatorDependencies
 from scaracom.bridge.listener.iholder import ITransportListenerHolder
 from scaracom.bridge.listener.itransport_listener import ITransportListener
-from scaracom.bridge.worker.dependencies import WorkerDependencies
-from scaracom.bridge.worker.factory import ReaderWorkerFactory
+from scaracom.bridge.receiver.ireceiver import ITransportReceiver
 from scaracom.transport.itransport import ITransport
 
 __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -50,9 +49,10 @@ class ConnectionCoordinator:
             :attributes:
                 | _transport - Injected ITransport communication transport layer.
                 | _listener_holder - Injected ITransportListenerHolder event sink container.
-                | _worker_factory - Injected ReaderWorkerFactory worker creator class.
-                | _stop_event - Event signaling reader thread termination.
+                | _receiver - Injected ITransportReceiver background packet runner.
+                | _stop_event - Injected Event signaling reader loop termination.
                 | _reader_thread - Thread handle running background packet reading loop.
+                | _lock - Reentrant thread lock for lifecycle state transitions.
             :methods:
                 | __init__ - Initializes connection coordinator with dependencies.
                 | is_connected - Checks if communication link is active.
@@ -63,9 +63,10 @@ class ConnectionCoordinator:
 
     _transport: ITransport
     _listener_holder: ITransportListenerHolder
-    _worker_factory: Type[ReaderWorkerFactory]
+    _receiver: ITransportReceiver
     _stop_event: Event
     _reader_thread: Thread
+    _lock: RLock
 
     def __init__(self, dependencies: CoordinatorDependencies) -> None:
         '''
@@ -76,9 +77,10 @@ class ConnectionCoordinator:
         '''
         self._transport: Final[ITransport] = dependencies.transport
         self._listener_holder: Final[ITransportListenerHolder] = dependencies.listener_holder
-        self._worker_factory: Final[Type[ReaderWorkerFactory]] = dependencies.worker_factory
-        self._stop_event: Final[Event] = Event()
+        self._receiver: Final[ITransportReceiver] = dependencies.receiver
+        self._stop_event: Final[Event] = dependencies.stop_event
         self._reader_thread: Thread = Thread(target=bool)
+        self._lock: Final[RLock] = RLock()
 
     def is_connected(self) -> bool:
         '''
@@ -86,7 +88,8 @@ class ConnectionCoordinator:
 
             :return: True if connected, False otherwise.
         '''
-        return self._transport.is_connected()
+        with self._lock:
+            return self._transport.is_connected()
 
     def set_listener(self, listener: ITransportListener) -> None:
         '''
@@ -104,45 +107,43 @@ class ConnectionCoordinator:
             :param baudrate: Transmission baud rate.
             :return: True if connected successfully, False otherwise.
         '''
-        self.disconnect()
+        with self._lock:
+            self.disconnect()
 
-        if self._transport.connect(port, baudrate):
-            self._stop_event.clear()
-            worker = self._worker_factory.create(
-                WorkerDependencies(
-                    transport=self._transport,
-                    listener=self._listener_holder,
-                    stop_event=self._stop_event,
+            if self._transport.connect(port, baudrate):
+                self._stop_event.clear()
+                self._reader_thread = Thread(target=self._receiver.run, daemon=True)
+                self._reader_thread.start()
+                self._listener_holder.on_log_emitted(
+                    f'[HOST]: Connected to {port}', False
                 )
-            )
-            self._reader_thread = Thread(target=worker.run, daemon=True)
-            self._reader_thread.start()
-            self._listener_holder.on_log_emitted(
-                f'[HOST]: Connected to {port}', False
-            )
-            return True
 
-        self._listener_holder.on_log_emitted(
-            f'[ERR]: Failed to connect to {port}', False
-        )
-        return False
+                return True
+
+            self._listener_holder.on_log_emitted(
+                f'[ERR]: Failed to connect to {port}', False
+            )
+
+            return False
 
     def disconnect(self) -> None:
         '''
             Terminates reader thread and closes transport connection.
         '''
-        self._stop_event.set()
+        with self._lock:
+            self._stop_event.set()
 
-        try:
-            self._transport.disconnect()
-        except Exception as exc:
+            try:
+                self._transport.disconnect()
+
+            except Exception as exc:
+                self._listener_holder.on_log_emitted(
+                    f'[ERR]: Error disconnecting transport: {exc}', False
+                )
+
+            if self._reader_thread.is_alive():
+                self._reader_thread.join(timeout=0.2)
+
             self._listener_holder.on_log_emitted(
-                f'[ERR]: Error disconnecting transport: {exc}', False
+                '[HOST]: Disconnected from transport', False
             )
-
-        if self._reader_thread.is_alive():
-            self._reader_thread.join(timeout=0.2)
-
-        self._listener_holder.on_log_emitted(
-            '[HOST]: Disconnected from transport', False
-        )

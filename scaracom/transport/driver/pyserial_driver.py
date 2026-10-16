@@ -21,13 +21,13 @@ Info
 
 from __future__ import annotations
 
-from serial import Serial, SerialException
+from serial import Serial, SerialBase, SerialException, serial_for_url
 
 __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -50,7 +50,7 @@ class PySerialDriver:
                 | is_open - Checks whether underlying serial port is open.
     '''
 
-    _serial: Serial | None
+    _serial: SerialBase | None
 
     def __init__(self) -> None:
         '''
@@ -82,11 +82,20 @@ class PySerialDriver:
         self.close()
 
         try:
-            self._serial = Serial(port=port, baudrate=baudrate, timeout=timeout)
+            if '://' in port:
+                self._serial = serial_for_url(port, baudrate=baudrate, timeout=timeout)
+            elif ':' in port and not port.startswith('/'):
+                self._serial = serial_for_url(
+                    f'socket://{port}', baudrate=baudrate, timeout=timeout
+                )
+            else:
+                self._serial = Serial(port=port, baudrate=baudrate, timeout=timeout)
+
             return True
 
         except (OSError, SerialException):
             self._serial = None
+
             return False
 
     def close(self) -> None:
@@ -120,6 +129,8 @@ class PySerialDriver:
             return self._serial.read(size)
 
         except (OSError, SerialException):
+            self.close()
+
             return b''
 
     def write(self, data: bytes) -> int:
@@ -136,7 +147,10 @@ class PySerialDriver:
         try:
             count = self._serial.write(data)
             self._serial.flush()
+
             return count
 
         except (OSError, SerialException):
+            self.close()
+
             return 0

@@ -4,53 +4,15 @@ scaracom.bridge.transceiver package
 Submodules
 ----------
 
-scaracom.bridge.transceiver.dependencies module
------------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: scaracom.bridge.transceiver.dependencies
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.bridge.transceiver.factory module
-------------------------------------------
-
-.. automodule:: scaracom.bridge.transceiver.factory
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.bridge.transceiver.ibyte\_sender module
-------------------------------------------------
-
-.. automodule:: scaracom.bridge.transceiver.ibyte_sender
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.bridge.transceiver.ichannel module
--------------------------------------------
-
-.. automodule:: scaracom.bridge.transceiver.ichannel
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.bridge.transceiver.icommand\_sender module
----------------------------------------------------
-
-.. automodule:: scaracom.bridge.transceiver.icommand_sender
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.bridge.transceiver.transceiver module
-----------------------------------------------
-
-.. automodule:: scaracom.bridge.transceiver.transceiver
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   scaracom.bridge.transceiver.dependencies
+   scaracom.bridge.transceiver.factory
+   scaracom.bridge.transceiver.ibyte_sender
+   scaracom.bridge.transceiver.ichannel
+   scaracom.bridge.transceiver.icommand_sender
+   scaracom.bridge.transceiver.transceiver
 
 Module contents
 ---------------
@@ -59,3 +21,4 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+   :private-members:

@@ -8,34 +8,18 @@ Subpackages
    :maxdepth: 4
 
    scaracom.transport.driver
+   scaracom.transport.preference
    scaracom.transport.scanner
 
 Submodules
 ----------
 
-scaracom.transport.factory module
----------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: scaracom.transport.factory
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.transport.itransport module
-------------------------------------
-
-.. automodule:: scaracom.transport.itransport
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.transport.transport module
------------------------------------
-
-.. automodule:: scaracom.transport.transport
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   scaracom.transport.factory
+   scaracom.transport.itransport
+   scaracom.transport.transport
 
 Module contents
 ---------------
@@ -44,3 +28,4 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+   :private-members:

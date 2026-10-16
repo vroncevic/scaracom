@@ -9,35 +9,18 @@ Subpackages
 
    scaracom.bridge.coordinator
    scaracom.bridge.listener
+   scaracom.bridge.receiver
    scaracom.bridge.transceiver
-   scaracom.bridge.worker
 
 Submodules
 ----------
 
-scaracom.bridge.dependencies module
------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: scaracom.bridge.dependencies
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.bridge.factory module
-------------------------------
-
-.. automodule:: scaracom.bridge.factory
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.bridge.provides module
--------------------------------
-
-.. automodule:: scaracom.bridge.provides
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   scaracom.bridge.dependencies
+   scaracom.bridge.factory
+   scaracom.bridge.provides
 
 Module contents
 ---------------
@@ -46,3 +29,4 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+   :private-members:

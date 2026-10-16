@@ -22,17 +22,17 @@ Info
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Type
+from threading import Event
 
 from scaracom.bridge.listener.iholder import ITransportListenerHolder
-from scaracom.bridge.worker.factory import ReaderWorkerFactory
+from scaracom.bridge.receiver.ireceiver import ITransportReceiver
 from scaracom.transport.itransport import ITransport
 
 __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -48,9 +48,11 @@ class CoordinatorDependencies:
             :attributes:
                 | transport - Injected ITransport communication transport layer.
                 | listener_holder - Injected ITransportListenerHolder listener container.
-                | worker_factory - Injected ReaderWorkerFactory class for reader worker assembly.
+                | receiver - Injected ITransportReceiver background loop runner.
+                | stop_event - Injected Event signaling receiver termination.
     '''
 
     transport: ITransport
     listener_holder: ITransportListenerHolder
-    worker_factory: Type[ReaderWorkerFactory]
+    receiver: ITransportReceiver
+    stop_event: Event

@@ -4,29 +4,12 @@ scaracom.transport.scanner package
 Submodules
 ----------
 
-scaracom.transport.scanner.factory module
------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: scaracom.transport.scanner.factory
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.transport.scanner.iport\_scanner module
-------------------------------------------------
-
-.. automodule:: scaracom.transport.scanner.iport_scanner
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.transport.scanner.port\_scanner module
------------------------------------------------
-
-.. automodule:: scaracom.transport.scanner.port_scanner
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   scaracom.transport.scanner.factory
+   scaracom.transport.scanner.iport_scanner
+   scaracom.transport.scanner.port_scanner
 
 Module contents
 ---------------
@@ -35,3 +18,4 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+   :private-members:

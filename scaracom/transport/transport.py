@@ -22,6 +22,7 @@ Info
 from __future__ import annotations
 
 from threading import Lock
+from typing import Final
 
 from scaracom.transport.driver.idriver import ISerialDriver
 
@@ -29,7 +30,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -43,7 +44,9 @@ class SerialTransport:
 
             :attributes:
                 | _driver - Injected physical serial driver instance.
-                | _lock - Thread lock for synchronization of serial read/write.
+                | _read_lock - Thread lock for stream reading synchronization.
+                | _write_lock - Thread lock for stream writing synchronization.
+                | _state_lock - Thread lock for connection lifecycle synchronization.
             :methods:
                 | __init__ - Initializes serial transport with driver.
                 | is_connected - Returns connection state.
@@ -54,7 +57,9 @@ class SerialTransport:
     '''
 
     _driver: ISerialDriver
-    _lock: Lock
+    _read_lock: Lock
+    _write_lock: Lock
+    _state_lock: Lock
 
     def __init__(self, driver: ISerialDriver) -> None:
         '''
@@ -63,8 +68,10 @@ class SerialTransport:
             :param driver: Injected ISerialDriver instance.
             :exceptions: None.
         '''
-        self._driver = driver
-        self._lock = Lock()
+        self._driver: Final[ISerialDriver] = driver
+        self._read_lock: Final[Lock] = Lock()
+        self._write_lock: Final[Lock] = Lock()
+        self._state_lock: Final[Lock] = Lock()
 
     def is_connected(self) -> bool:
         '''
@@ -73,7 +80,7 @@ class SerialTransport:
             :return: True if connected, False otherwise.
             :exceptions: None.
         '''
-        with self._lock:
+        with self._state_lock:
             return self._driver.is_open()
 
     def connect(self, port: str, baudrate: int) -> bool:
@@ -85,7 +92,7 @@ class SerialTransport:
             :return: True if connected successfully, False otherwise.
             :exceptions: None.
         '''
-        with self._lock:
+        with self._state_lock, self._read_lock, self._write_lock:
             return self._driver.open(port=port, baudrate=baudrate, timeout=0.1)
 
     def disconnect(self) -> None:
@@ -94,7 +101,7 @@ class SerialTransport:
 
             :exceptions: None.
         '''
-        with self._lock:
+        with self._state_lock, self._read_lock, self._write_lock:
             self._driver.close()
 
     def read_bytes(self, size: int) -> bytes:
@@ -105,7 +112,7 @@ class SerialTransport:
             :return: Read byte payload.
             :exceptions: None.
         '''
-        with self._lock:
+        with self._read_lock:
             return self._driver.read(size)
 
     def write_bytes(self, data: bytes) -> bool:
@@ -116,5 +123,5 @@ class SerialTransport:
             :return: True if transmitted, False otherwise.
             :exceptions: None.
         '''
-        with self._lock:
+        with self._write_lock:
             return self._driver.write(data) > 0

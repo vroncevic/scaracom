@@ -29,7 +29,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'GNU General Public License (GPL)'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -44,7 +44,6 @@ PROGRAMMING_LANG: str = 'Programming Language :: Python ::'
 VERSIONS: list[str] = ['3.12', '3.13', '3.14']
 SUPPORTED_PY_VERSIONS: list[str] = [f'{PROGRAMMING_LANG} {VERSION}' for VERSION in VERSIONS]
 PYP_CLASSIFIERS: list[str] = SUPPORTED_PY_VERSIONS
-
 
 def find_package_data(pkg: str) -> list[str]:
     '''
@@ -69,10 +68,9 @@ def find_package_data(pkg: str) -> list[str]:
 
     return package_data
 
-
 setup(
     name='scaracom',
-    version='0.1.0',
+    version='1.0.0',
     description='SCARA Robot Communication Library — Layer 0 Hardware Transport & Layer 1 Protocol Bridge.',
     author='Vladimir Roncevic',
     author_email='elektron.ronca@gmail.com',

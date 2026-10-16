@@ -22,6 +22,7 @@ Info
 from __future__ import annotations
 
 from unittest import TestCase
+from unittest import main
 from unittest.mock import MagicMock, patch
 
 from scaracom.transport.scanner.port_scanner import PortScanner
@@ -30,7 +31,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -39,6 +40,16 @@ __status__ = 'Updated'
 class PortScannerTestCase(TestCase):
     '''
         Verifies PortScanner execution behaviors.
+
+        It defines:
+
+            :methods:
+                | setUp - Sets up fresh port scanner instance.
+                | test_scan_ports_detected - Verifies ports formatted when detected.
+                | test_scan_ports_fallback_when_empty - Verifies fallback on empty or error.
+                | test_get_default_ports_windows - Verifies Windows fallback ports.
+                | test_get_default_ports_darwin - Verifies macOS fallback ports.
+                | test_get_version - Verifies component version string.
     '''
 
     def setUp(self) -> None:
@@ -69,14 +80,38 @@ class PortScannerTestCase(TestCase):
     @patch('scaracom.transport.scanner.port_scanner.comports')
     def test_scan_ports_fallback_when_empty(self, mock_comports: MagicMock) -> None:
         '''
-            Verifies fallback to default platform ports when no ports detected.
+            Verifies fallback to default platform ports when no ports detected or on error.
         '''
         mock_comports.return_value = []
         ports = self.scanner.scan_ports()
         self.assertTrue(len(ports) > 0)
 
+        mock_comports.side_effect = OSError('COM scanning error')
+        fallback_ports = self.scanner.scan_ports()
+        self.assertTrue(len(fallback_ports) > 0)
+
+    @patch('scaracom.transport.scanner.port_scanner.platform', 'win32')
+    def test_get_default_ports_windows(self) -> None:
+        '''
+            Verifies default fallback ports on Windows platform.
+        '''
+        ports = self.scanner.get_default_ports()
+        self.assertEqual(ports, PortScanner.WINDOWS_DEFAULT_PORTS)
+
+    @patch('scaracom.transport.scanner.port_scanner.platform', 'darwin')
+    def test_get_default_ports_darwin(self) -> None:
+        '''
+            Verifies default fallback ports on macOS platform.
+        '''
+        ports = self.scanner.get_default_ports()
+        self.assertEqual(ports, PortScanner.DARWIN_DEFAULT_PORTS)
+
     def test_get_version(self) -> None:
         '''
             Verifies component version string.
         '''
-        self.assertEqual(self.scanner.get_version(), '0.1.0')
+        self.assertEqual(self.scanner.get_version(), '1.0.0')
+
+
+if __name__ == '__main__':
+    main()

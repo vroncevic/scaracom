@@ -4,29 +4,12 @@ scaracom.transport.driver package
 Submodules
 ----------
 
-scaracom.transport.driver.factory module
-----------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: scaracom.transport.driver.factory
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.transport.driver.idriver module
-----------------------------------------
-
-.. automodule:: scaracom.transport.driver.idriver
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.transport.driver.pyserial\_driver module
--------------------------------------------------
-
-.. automodule:: scaracom.transport.driver.pyserial_driver
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   scaracom.transport.driver.factory
+   scaracom.transport.driver.idriver
+   scaracom.transport.driver.pyserial_driver
 
 Module contents
 ---------------
@@ -35,3 +18,4 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+   :private-members:

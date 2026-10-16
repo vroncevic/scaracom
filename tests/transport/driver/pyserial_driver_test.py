@@ -22,6 +22,7 @@ Info
 from __future__ import annotations
 
 from unittest import TestCase
+from unittest import main
 from unittest.mock import MagicMock, patch
 
 from serial import SerialException
@@ -32,7 +33,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -71,6 +72,38 @@ class PySerialDriverTestCase(TestCase):
         self.assertTrue(self.driver.is_open())
         mock_serial_cls.assert_called_once_with(port='/dev/ttyUSB0', baudrate=115200, timeout=0.1)
 
+    @patch('scaracom.transport.driver.pyserial_driver.serial_for_url')
+    def test_open_socket_endpoint_success(self, mock_serial_for_url: MagicMock) -> None:
+        '''
+            Verifies successful socket endpoint opening.
+        '''
+        mock_ser = MagicMock()
+        mock_ser.is_open = True
+        mock_serial_for_url.return_value = mock_ser
+
+        opened = self.driver.open('127.0.0.1:8888', 115200, 0.1)
+        self.assertTrue(opened)
+        self.assertTrue(self.driver.is_open())
+        mock_serial_for_url.assert_called_once_with(
+            'socket://127.0.0.1:8888', baudrate=115200, timeout=0.1
+        )
+
+    @patch('scaracom.transport.driver.pyserial_driver.serial_for_url')
+    def test_open_url_endpoint_success(self, mock_serial_for_url: MagicMock) -> None:
+        '''
+            Verifies successful explicit URL endpoint opening.
+        '''
+        mock_ser = MagicMock()
+        mock_ser.is_open = True
+        mock_serial_for_url.return_value = mock_ser
+
+        opened = self.driver.open('socket://192.168.1.10:8888', 115200, 0.1)
+        self.assertTrue(opened)
+        self.assertTrue(self.driver.is_open())
+        mock_serial_for_url.assert_called_once_with(
+            'socket://192.168.1.10:8888', baudrate=115200, timeout=0.1
+        )
+
     @patch('scaracom.transport.driver.pyserial_driver.Serial')
     def test_open_failure_exception(self, mock_serial_cls: MagicMock) -> None:
         '''
@@ -84,7 +117,7 @@ class PySerialDriverTestCase(TestCase):
     @patch('scaracom.transport.driver.pyserial_driver.Serial')
     def test_read_and_write_success(self, mock_serial_cls: MagicMock) -> None:
         '''
-            Verifies read and write operations on open port.
+            Verifies read and write operations on open port and error handling.
         '''
         mock_ser = MagicMock()
         mock_ser.is_open = True
@@ -100,10 +133,20 @@ class PySerialDriverTestCase(TestCase):
         self.assertEqual(written_count, 5)
         mock_ser.flush.assert_called_once()
 
+        mock_ser.read.side_effect = SerialException('Read failed')
+        self.driver.open('/dev/ttyUSB0', 115200, 0.1)
+        self.assertEqual(self.driver.read(10), b'')
+        self.assertFalse(self.driver.is_open())
+
+        mock_ser.write.side_effect = SerialException('Write failed')
+        self.driver.open('/dev/ttyUSB0', 115200, 0.1)
+        self.assertEqual(self.driver.write(b'hello'), 0)
+        self.assertFalse(self.driver.is_open())
+
     @patch('scaracom.transport.driver.pyserial_driver.Serial')
     def test_close_handles_cleanly(self, mock_serial_cls: MagicMock) -> None:
         '''
-            Verifies close gracefully shuts down serial handle.
+            Verifies close gracefully shuts down serial handle and handles exceptions.
         '''
         mock_ser = MagicMock()
         mock_ser.is_open = True
@@ -113,3 +156,15 @@ class PySerialDriverTestCase(TestCase):
         self.driver.close()
         self.assertFalse(self.driver.is_open())
         mock_ser.close.assert_called_once()
+
+        mock_ser_err = MagicMock()
+        mock_ser_err.is_open = True
+        mock_ser_err.close.side_effect = SerialException('Close failed')
+        mock_serial_cls.return_value = mock_ser_err
+        self.driver.open('/dev/ttyUSB0', 115200, 0.1)
+        self.driver.close()
+        self.assertFalse(self.driver.is_open())
+
+
+if __name__ == '__main__':
+    main()

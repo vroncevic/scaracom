@@ -22,34 +22,99 @@ Info
 from __future__ import annotations
 
 from unittest import TestCase
+from unittest import main
 
 from scaracom.bridge.listener.itransport_listener import ITransportListener
-from scaracom.bridge.listener.null_listener import NullTransportListener
 
 __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
 
 
+class ConformingTransportListener:
+    '''
+        Mock listener conforming to ITransportListener protocol.
+
+        It defines:
+
+            :methods:
+                | on_line_received - Handles received line.
+                | on_bytes_received - Handles received byte data.
+                | on_log_emitted - Handles emitted log entry.
+                | get_version - Returns version string.
+    '''
+
+    def on_line_received(self, line: str) -> None:
+        '''
+            Handles received text line.
+
+            :param line: Received line string.
+            :exceptions: None.
+        '''
+        del line
+
+    def on_bytes_received(self, data: bytes) -> None:
+        '''
+            Handles received byte buffer.
+
+            :param data: Received byte buffer.
+            :exceptions: None.
+        '''
+        del data
+
+    def on_log_emitted(self, message: str, is_tx: bool) -> None:
+        '''
+            Handles log event emission.
+
+            :param message: Log text string.
+            :param is_tx: Direction flag.
+            :exceptions: None.
+        '''
+        del message, is_tx
+
+    def get_version(self) -> str:
+        '''
+            Returns semantic version string.
+
+            :return: Version string.
+            :exceptions: None.
+        '''
+        return '1.0.0'
+
+
 class TransportListenerProtocolTestCase(TestCase):
     '''
         Verifies ITransportListener runtime checkable protocol.
+
+        It defines:
+
+            :methods:
+                | test_conforming_listener_implements_protocol - Verifies valid listener satisfies protocol.
+                | test_non_listener_fails_protocol - Verifies non-conforming object fails check.
     '''
 
-    def test_null_listener_implements_protocol(self) -> None:
+    def test_conforming_listener_implements_protocol(self) -> None:
         '''
-            Verifies NullTransportListener satisfies ITransportListener.
+            Verifies conforming object satisfies ITransportListener.
+
+            :exceptions: None.
         '''
-        listener = NullTransportListener()
+        listener = ConformingTransportListener()
         self.assertTrue(isinstance(listener, ITransportListener))
 
     def test_non_listener_fails_protocol(self) -> None:
         '''
             Verifies non-conforming object fails ITransportListener check.
+
+            :exceptions: None.
         '''
         self.assertFalse(isinstance(object(), ITransportListener))
+
+
+if __name__ == '__main__':
+    main()

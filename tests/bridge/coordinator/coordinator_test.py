@@ -21,19 +21,19 @@ Info
 
 from __future__ import annotations
 
+from threading import Event, Thread
 from unittest import TestCase
 from unittest.mock import Mock
 
 from scaracom.bridge.coordinator.coordinator import ConnectionCoordinator
 from scaracom.bridge.coordinator.dependencies import CoordinatorDependencies
-from scaracom.bridge.listener.null_listener import NullTransportListener
-from scaracom.bridge.worker.factory import ReaderWorkerFactory
+from scaracom.bridge.listener.itransport_listener import ITransportListener
 
 __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -53,7 +53,8 @@ class ConnectionCoordinatorTestCase(TestCase):
         deps = CoordinatorDependencies(
             transport=mock_transport,
             listener_holder=Mock(),
-            worker_factory=ReaderWorkerFactory,
+            receiver=Mock(),
+            stop_event=Event(),
         )
         coordinator = ConnectionCoordinator(deps)
         self.assertTrue(coordinator.is_connected())
@@ -69,10 +70,11 @@ class ConnectionCoordinatorTestCase(TestCase):
         deps = CoordinatorDependencies(
             transport=Mock(),
             listener_holder=mock_holder,
-            worker_factory=ReaderWorkerFactory,
+            receiver=Mock(),
+            stop_event=Event(),
         )
         coordinator = ConnectionCoordinator(deps)
-        listener = NullTransportListener()
+        listener = Mock(spec=ITransportListener)
         coordinator.set_listener(listener)
         mock_holder.set_listener.assert_called_with(listener)
 
@@ -87,7 +89,8 @@ class ConnectionCoordinatorTestCase(TestCase):
         deps = CoordinatorDependencies(
             transport=mock_transport,
             listener_holder=mock_holder,
-            worker_factory=ReaderWorkerFactory,
+            receiver=Mock(),
+            stop_event=Event(),
         )
         coordinator = ConnectionCoordinator(deps)
         result = coordinator.connect('/dev/ttyUSB0', 115200)
@@ -105,11 +108,15 @@ class ConnectionCoordinatorTestCase(TestCase):
         mock_transport.connect.return_value = True
         mock_transport.is_connected.return_value = False
         mock_holder = Mock()
+        stop_event = Event()
+        mock_receiver = Mock()
+        mock_receiver.run.side_effect = lambda: stop_event.wait(0.5)
 
         deps = CoordinatorDependencies(
             transport=mock_transport,
             listener_holder=mock_holder,
-            worker_factory=ReaderWorkerFactory,
+            receiver=mock_receiver,
+            stop_event=stop_event,
         )
         coordinator = ConnectionCoordinator(deps)
         result = coordinator.connect('/dev/ttyUSB0', 115200)
@@ -129,7 +136,8 @@ class ConnectionCoordinatorTestCase(TestCase):
         deps = CoordinatorDependencies(
             transport=mock_transport,
             listener_holder=mock_holder,
-            worker_factory=ReaderWorkerFactory,
+            receiver=Mock(),
+            stop_event=Event(),
         )
         coordinator = ConnectionCoordinator(deps)
         coordinator.disconnect()
@@ -137,3 +145,33 @@ class ConnectionCoordinatorTestCase(TestCase):
         mock_holder.on_log_emitted.assert_any_call(
             '[ERR]: Error disconnecting transport: Close error', False
         )
+
+    def test_concurrent_connect_disconnect_thread_safe(self) -> None:
+        '''
+            Verifies concurrent connect and disconnect calls do not raise race errors.
+        '''
+        mock_transport = Mock()
+        mock_transport.connect.return_value = True
+        mock_transport.is_connected.return_value = False
+        deps = CoordinatorDependencies(
+            transport=mock_transport,
+            listener_holder=Mock(),
+            receiver=Mock(),
+            stop_event=Event(),
+        )
+        coordinator = ConnectionCoordinator(deps)
+        threads: list[Thread] = []
+
+        for idx in range(4):
+            if idx % 2 == 0:
+                t = Thread(target=coordinator.connect, args=('/dev/ttyUSB0', 115200))
+            else:
+                t = Thread(target=coordinator.disconnect)
+            threads.append(t)
+            t.start()
+
+        for t in threads:
+            t.join(timeout=1.0)
+
+        coordinator.disconnect()
+        self.assertFalse(coordinator.is_connected())

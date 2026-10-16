@@ -1,0 +1,78 @@
+# -*- coding: UTF-8 -*-
+
+'''
+Module
+    ireceiver_test.py
+Copyright
+    Copyright (C) 2026 Vladimir Roncevic <elektron.ronca@gmail.com>
+    scaracom is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    scaracom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License along
+    with this program. If not, see <http://www.gnu.org/licenses/>.
+Info
+    Unit tests for ITransportReceiver protocol.
+'''
+
+from __future__ import annotations
+
+from threading import Event
+from unittest import TestCase
+from unittest import main
+from unittest.mock import Mock
+
+from scaracom.bridge.receiver.dependencies import ReceiverDependencies
+from scaracom.bridge.receiver.ireceiver import ITransportReceiver
+from scaracom.bridge.receiver.receiver import TransportReceiver
+
+__author__ = 'Vladimir Roncevic'
+__copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
+__credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
+__license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
+__version__ = '1.0.0'
+__maintainer__ = 'Vladimir Roncevic'
+__email__ = 'elektron.ronca@gmail.com'
+__status__ = 'Updated'
+
+
+class TransportReceiverProtocolTestCase(TestCase):
+    '''
+        Verifies ITransportReceiver runtime checkable protocol.
+
+        It defines:
+
+            :methods:
+                | test_receiver_implements_protocol - Verifies receiver satisfies protocol.
+                | test_non_receiver_fails_protocol - Verifies invalid object fails protocol.
+    '''
+
+    def test_receiver_implements_protocol(self) -> None:
+        '''
+            Verifies TransportReceiver satisfies ITransportReceiver.
+
+            :exceptions: None.
+        '''
+        deps = ReceiverDependencies(
+            transport=Mock(),
+            listener=Mock(),
+            stop_event=Event(),
+        )
+        receiver = TransportReceiver(deps)
+        self.assertTrue(isinstance(receiver, ITransportReceiver))
+
+    def test_non_receiver_fails_protocol(self) -> None:
+        '''
+            Verifies non-conforming object fails ITransportReceiver check.
+
+            :exceptions: None.
+        '''
+        self.assertFalse(isinstance(object(), ITransportReceiver))
+
+
+if __name__ == '__main__':
+    main()

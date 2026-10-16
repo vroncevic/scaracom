@@ -4,45 +4,13 @@ scaracom.bridge.listener package
 Submodules
 ----------
 
-scaracom.bridge.listener.factory module
----------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: scaracom.bridge.listener.factory
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.bridge.listener.holder module
---------------------------------------
-
-.. automodule:: scaracom.bridge.listener.holder
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.bridge.listener.iholder module
----------------------------------------
-
-.. automodule:: scaracom.bridge.listener.iholder
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.bridge.listener.itransport\_listener module
-----------------------------------------------------
-
-.. automodule:: scaracom.bridge.listener.itransport_listener
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-scaracom.bridge.listener.null\_listener module
-----------------------------------------------
-
-.. automodule:: scaracom.bridge.listener.null_listener
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   scaracom.bridge.listener.factory
+   scaracom.bridge.listener.holder
+   scaracom.bridge.listener.iholder
+   scaracom.bridge.listener.itransport_listener
 
 Module contents
 ---------------
@@ -51,3 +19,4 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+   :private-members:

@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    scaracom.bridge
+   scaracom.flow
    scaracom.transport
 
 Module contents
@@ -17,3 +18,4 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+   :private-members:

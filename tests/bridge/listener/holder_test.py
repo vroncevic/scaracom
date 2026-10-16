@@ -22,6 +22,7 @@ Info
 from __future__ import annotations
 
 from unittest import TestCase
+from unittest import main
 
 from scaracom.bridge.listener.holder import TransportListenerHolder
 
@@ -29,7 +30,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -70,7 +71,7 @@ class MockListener:
         '''
             Returns semantic version string.
         '''
-        return '0.1.0'
+        return '1.0.0'
 
 
 class TransportListenerHolderTestCase(TestCase):
@@ -78,14 +79,20 @@ class TransportListenerHolderTestCase(TestCase):
         Verifies TransportListenerHolder behaviors.
     '''
 
-    def test_default_listener_discards_events(self) -> None:
+    def test_initial_listener_receives_events(self) -> None:
         '''
-            Verifies default initialization with NullTransportListener safely executes.
+            Verifies initial listener safely receives forwarded events.
+
+            :exceptions: None.
         '''
-        holder = TransportListenerHolder()
+        mock = MockListener()
+        holder = TransportListenerHolder(mock)
         holder.on_line_received('LINE')
         holder.on_bytes_received(b'BYTES')
         holder.on_log_emitted('LOG', False)
+        self.assertEqual(mock.received_lines, ['LINE'])
+        self.assertEqual(mock.received_bytes, [b'BYTES'])
+        self.assertEqual(mock.emitted_logs, [('LOG', False)])
 
     def test_delegates_to_injected_listener(self) -> None:
         '''
@@ -118,3 +125,7 @@ class TransportListenerHolderTestCase(TestCase):
 
         self.assertEqual(mock1.received_lines, ['FIRST'])
         self.assertEqual(mock2.received_lines, ['SECOND'])
+
+
+if __name__ == '__main__':
+    main()
