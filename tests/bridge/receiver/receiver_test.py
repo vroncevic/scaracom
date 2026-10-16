@@ -33,7 +33,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -192,7 +192,7 @@ class TransportReceiverTestCase(TestCase):
             stop_event=Event(),
         )
         receiver = TransportReceiver(deps)
-        self.assertEqual(receiver.get_version(), '1.0.0')
+        self.assertEqual(receiver.get_version(), '1.0.1')
 
 
 if __name__ == '__main__':
