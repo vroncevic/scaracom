@@ -27,7 +27,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -41,18 +41,10 @@ class ITransportListener(Protocol):
         It defines:
 
             :methods:
-                | on_line_received - Handler invoked when text line is received.
                 | on_bytes_received - Handler invoked when raw byte chunk is received.
                 | on_log_emitted - Handler invoked when connection or I/O log message is generated.
                 | get_version - Returns protocol version string.
     '''
-
-    def on_line_received(self, line: str) -> None:
-        '''
-            Handles received text response line.
-
-            :param line: Inbound line payload string.
-        '''
 
     def on_bytes_received(self, data: bytes) -> None:
         '''

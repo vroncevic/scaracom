@@ -33,7 +33,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -41,7 +41,7 @@ __status__ = 'Updated'
 
 class TransportReceiver:
     '''
-        Dedicated background receiver handling byte streaming and newline packet assembly.
+        Dedicated background receiver handling inbound transport byte streaming.
 
         It defines:
 
@@ -81,11 +81,10 @@ class TransportReceiver:
 
     def run(self) -> None:
         '''
-            Executes background polling loop assembling incoming lines and forwarding byte chunks.
+            Executes background polling loop forwarding inbound byte chunks to listener.
 
             :exceptions: None.
         '''
-        buffer: str = ''
         abnormal_disconnect: bool = False
 
         while not self._stop_event.is_set():
@@ -106,22 +105,6 @@ class TransportReceiver:
                     self._listener.on_log_emitted(
                         f'[ERR]: Byte callback error: {b_exc}', False
                     )
-
-                buffer += data.decode('utf-8', errors='ignore')
-
-                while '\n' in buffer:
-                    line: str
-                    line, buffer = buffer.split('\n', 1)
-                    line = line.strip()
-
-                    if line:
-                        try:
-                            self._listener.on_line_received(line)
-
-                        except Exception as cb_exc:
-                            self._listener.on_log_emitted(
-                                f'[ERR]: Line callback error: {cb_exc}', False
-                            )
 
             except Exception:
                 if not self._stop_event.is_set():

@@ -11,7 +11,6 @@ Submodules
    scaracom.bridge.transceiver.factory
    scaracom.bridge.transceiver.ibyte_sender
    scaracom.bridge.transceiver.ichannel
-   scaracom.bridge.transceiver.icommand_sender
    scaracom.bridge.transceiver.transceiver
 
 Module contents

@@ -33,7 +33,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -48,7 +48,7 @@ class TransportReceiverTestCase(TestCase):
             :methods:
                 | test_is_running - Verifies is_running mirrors stop_event state.
                 | test_run_terminates_if_not_connected - Verifies run exits when disconnected.
-                | test_run_reads_bytes_and_dispatches_lines - Verifies run reads and forwards.
+                | test_run_reads_and_dispatches_bytes - Verifies run reads and forwards bytes.
                 | test_run_handles_listener_callback_exceptions - Verifies exception handling.
                 | test_run_handles_abnormal_disconnect - Verifies disconnect handling.
                 | test_get_version - Verifies component version string.
@@ -92,9 +92,9 @@ class TransportReceiverTestCase(TestCase):
 
         mock_transport.read_bytes.assert_not_called()
 
-    def test_run_reads_bytes_and_dispatches_lines(self) -> None:
+    def test_run_reads_and_dispatches_bytes(self) -> None:
         '''
-            Verifies run reads data and forwards bytes and assembled lines to listener.
+            Verifies run reads data and forwards bytes to listener.
 
             :exceptions: None.
         '''
@@ -124,7 +124,6 @@ class TransportReceiverTestCase(TestCase):
         receiver.run()
 
         mock_listener.on_bytes_received.assert_called_with(b'CMD:STATUS_OK\n')
-        mock_listener.on_line_received.assert_called_with('CMD:STATUS_OK')
 
     def test_run_handles_listener_callback_exceptions(self) -> None:
         '''
@@ -143,7 +142,6 @@ class TransportReceiverTestCase(TestCase):
         mock_transport.read_bytes.side_effect = read_side_effect
         mock_listener = Mock()
         mock_listener.on_bytes_received.side_effect = RuntimeError('Byte error')
-        mock_listener.on_line_received.side_effect = RuntimeError('Line error')
 
         deps = ReceiverDependencies(
             transport=mock_transport,
@@ -153,7 +151,7 @@ class TransportReceiverTestCase(TestCase):
         receiver = TransportReceiver(deps)
         receiver.run()
 
-        self.assertEqual(mock_listener.on_log_emitted.call_count, 2)
+        self.assertEqual(mock_listener.on_log_emitted.call_count, 1)
 
     def test_run_handles_abnormal_disconnect(self) -> None:
         '''
@@ -192,7 +190,7 @@ class TransportReceiverTestCase(TestCase):
             stop_event=Event(),
         )
         receiver = TransportReceiver(deps)
-        self.assertEqual(receiver.get_version(), '1.0.1')
+        self.assertEqual(receiver.get_version(), '1.0.2')
 
 
 if __name__ == '__main__':
