@@ -30,7 +30,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -48,7 +48,6 @@ class TransportListenerHolder:
             :methods:
                 | __init__ - Initializes holder with injected initial listener.
                 | set_listener - Updates active listener target.
-                | on_line_received - Dispatches text line event to active listener.
                 | on_bytes_received - Dispatches raw bytes event to active listener.
                 | on_log_emitted - Dispatches log event to active listener.
     '''
@@ -75,17 +74,6 @@ class TransportListenerHolder:
         '''
         with self._lock:
             self._listener = listener
-
-    def on_line_received(self, line: str) -> None:
-        '''
-            Dispatches text line event to active listener.
-
-            :param line: Received text line.
-            :exceptions: None.
-        '''
-        with self._lock:
-            active_listener: ITransportListener = self._listener
-        active_listener.on_line_received(line)
 
     def on_bytes_received(self, data: bytes) -> None:
         '''

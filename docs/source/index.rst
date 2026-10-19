@@ -137,7 +137,6 @@ Framework structure
          │       ├── factory.py
          │       ├── ibyte_sender.py
          │       ├── ichannel.py
-         │       ├── icommand_sender.py
          │       ├── __init__.py
          │       └── transceiver.py
          ├── flow/
@@ -197,7 +196,7 @@ Framework structure
              │   └── port_scanner.py
              └── transport.py
 
-     16 directories, 72 files
+     16 directories, 71 files
 
 🏗 Architecture & SOLID Principles
 ----------------------------------

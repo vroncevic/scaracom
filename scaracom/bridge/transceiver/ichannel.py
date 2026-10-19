@@ -16,7 +16,7 @@ Copyright
     You should have received a copy of the GNU General Public License along
     with this program. If not, see <http://www.gnu.org/licenses/>.
 Info
-    Interface protocol for bi-directional raw communication channels.
+    Interface protocol for bi-directional raw byte communication channels.
 '''
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -36,13 +36,12 @@ __status__ = 'Updated'
 @runtime_checkable
 class IRawChannel(Protocol):
     '''
-        Structural protocol defining raw string and byte stream communication operations.
+        Structural protocol defining raw byte stream communication operations.
 
         It defines:
 
             :methods:
                 | is_connected - Checks whether transport connection is currently open.
-                | send_raw_command - Transmits string command packet over communication channel.
                 | send_raw_bytes - Transmits raw byte payload over active communication transport.
                 | get_version - Returns protocol version string.
     '''
@@ -52,14 +51,6 @@ class IRawChannel(Protocol):
             Checks whether transport connection is currently open.
 
             :return: True if transport is connected, False otherwise.
-        '''
-
-    def send_raw_command(self, cmd: str) -> bool:
-        '''
-            Transmits string command packet over communication channel.
-
-            :param cmd: Raw command string to transmit.
-            :return: True if transmission succeeded, False otherwise.
         '''
 
     def send_raw_bytes(self, payload: bytes) -> bool:

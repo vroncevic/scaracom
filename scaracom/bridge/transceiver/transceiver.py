@@ -16,7 +16,7 @@ Copyright
     You should have received a copy of the GNU General Public License along
     with this program. If not, see <http://www.gnu.org/licenses/>.
 Info
-    Transceiver managing raw string command and byte payload transmission over transport.
+    Transceiver managing raw byte payload transmission over transport.
 '''
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -39,7 +39,7 @@ __status__ = 'Updated'
 
 class RawTransceiver:
     '''
-        Transceiver managing raw string command and byte payload transmission.
+        Transceiver managing raw byte payload transmission.
 
         It defines:
 
@@ -49,7 +49,6 @@ class RawTransceiver:
             :methods:
                 | __init__ - Initializes RawTransceiver with dependency bundle.
                 | is_connected - Checks whether transport connection is currently open.
-                | send_raw_command - Transmits raw string command packet over channel.
                 | send_raw_bytes - Transmits raw byte payload over active transport.
                 | get_version - Returns transceiver component version.
     '''
@@ -75,27 +74,6 @@ class RawTransceiver:
             :exceptions: None.
         '''
         return self._transport.is_connected()
-
-    def send_raw_command(self, cmd: str) -> bool:
-        '''
-            Transmits raw string command packet over communication channel.
-
-            :param cmd: Raw command string to transmit.
-            :return: True if transmission succeeded, False otherwise.
-            :exceptions: None.
-        '''
-        if not self._transport.is_connected():
-            return False
-
-        clean_cmd: str = cmd.strip()
-        self._listener.on_log_emitted(f'[TX]: {clean_cmd}', True)
-        payload: bytes = f'{clean_cmd}\n'.encode('utf-8')
-
-        try:
-            return self._transport.write_bytes(payload)
-        except Exception as exc:
-            self._listener.on_log_emitted(f'[ERR]: Send error: {exc}', False)
-            return False
 
     def send_raw_bytes(self, payload: bytes) -> bool:
         '''

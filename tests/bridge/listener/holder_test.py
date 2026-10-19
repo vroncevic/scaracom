@@ -30,7 +30,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -45,15 +45,8 @@ class MockListener:
         '''
             Initializes mock listener records.
         '''
-        self.received_lines: list[str] = []
         self.received_bytes: list[bytes] = []
         self.emitted_logs: list[tuple[str, bool]] = []
-
-    def on_line_received(self, line: str) -> None:
-        '''
-            Records inbound line.
-        '''
-        self.received_lines.append(line)
 
     def on_bytes_received(self, data: bytes) -> None:
         '''
@@ -71,7 +64,7 @@ class MockListener:
         '''
             Returns semantic version string.
         '''
-        return '1.0.1'
+        return '1.0.2'
 
 
 class TransportListenerHolderTestCase(TestCase):
@@ -87,10 +80,8 @@ class TransportListenerHolderTestCase(TestCase):
         '''
         mock = MockListener()
         holder = TransportListenerHolder(mock)
-        holder.on_line_received('LINE')
         holder.on_bytes_received(b'BYTES')
         holder.on_log_emitted('LOG', False)
-        self.assertEqual(mock.received_lines, ['LINE'])
         self.assertEqual(mock.received_bytes, [b'BYTES'])
         self.assertEqual(mock.emitted_logs, [('LOG', False)])
 
@@ -101,11 +92,9 @@ class TransportListenerHolderTestCase(TestCase):
         mock = MockListener()
         holder = TransportListenerHolder(mock)
 
-        holder.on_line_received('STATUS:OK')
         holder.on_bytes_received(b'\x01\x02')
         holder.on_log_emitted('Log 1', True)
 
-        self.assertEqual(mock.received_lines, ['STATUS:OK'])
         self.assertEqual(mock.received_bytes, [b'\x01\x02'])
         self.assertEqual(mock.emitted_logs, [('Log 1', True)])
 
@@ -117,14 +106,14 @@ class TransportListenerHolderTestCase(TestCase):
         mock2 = MockListener()
         holder = TransportListenerHolder(mock1)
 
-        holder.on_line_received('FIRST')
-        self.assertEqual(mock1.received_lines, ['FIRST'])
+        holder.on_bytes_received(b'FIRST')
+        self.assertEqual(mock1.received_bytes, [b'FIRST'])
 
         holder.set_listener(mock2)
-        holder.on_line_received('SECOND')
+        holder.on_bytes_received(b'SECOND')
 
-        self.assertEqual(mock1.received_lines, ['FIRST'])
-        self.assertEqual(mock2.received_lines, ['SECOND'])
+        self.assertEqual(mock1.received_bytes, [b'FIRST'])
+        self.assertEqual(mock2.received_bytes, [b'SECOND'])
 
 
 if __name__ == '__main__':

@@ -109,7 +109,6 @@ python3 setup.py install --record files.txt
          │       ├── factory.py
          │       ├── ibyte_sender.py
          │       ├── ichannel.py
-         │       ├── icommand_sender.py
          │       ├── __init__.py
          │       └── transceiver.py
          ├── flow/
@@ -169,7 +168,7 @@ python3 setup.py install --record files.txt
              │   └── port_scanner.py
              └── transport.py
 
-     16 directories, 72 files
+     16 directories, 71 files
 ```
 </details>
 
@@ -206,22 +205,21 @@ python3 setup.py install --record files.txt
 | `scaracom/bridge/factory.py` | 36 | 0 | 100%|
 | `scaracom/bridge/listener/__init__.py` | 9 | 0 | 100%|
 | `scaracom/bridge/listener/factory.py` | 20 | 0 | 100%|
-| `scaracom/bridge/listener/holder.py` | 33 | 0 | 100%|
-| `scaracom/bridge/listener/iholder.py` | 17 | 0 | 100%|
-| `scaracom/bridge/listener/itransport_listener.py` | 16 | 0 | 100%|
+| `scaracom/bridge/listener/holder.py` | 29 | 0 | 100%|
+| `scaracom/bridge/listener/iholder.py` | 16 | 0 | 100%|
+| `scaracom/bridge/listener/itransport_listener.py` | 15 | 0 | 100%|
 | `scaracom/bridge/provides.py` | 20 | 0 | 100%|
 | `scaracom/bridge/receiver/__init__.py` | 9 | 0 | 100%|
 | `scaracom/bridge/receiver/dependencies.py` | 18 | 0 | 100%|
 | `scaracom/bridge/receiver/factory.py` | 20 | 0 | 100%|
 | `scaracom/bridge/receiver/ireceiver.py` | 15 | 0 | 100%|
-| `scaracom/bridge/receiver/receiver.py` | 58 | 0 | 100%|
+| `scaracom/bridge/receiver/receiver.py` | 48 | 0 | 100%|
 | `scaracom/bridge/transceiver/__init__.py` | 9 | 0 | 100%|
 | `scaracom/bridge/transceiver/dependencies.py` | 16 | 0 | 100%|
 | `scaracom/bridge/transceiver/factory.py` | 20 | 0 | 100%|
 | `scaracom/bridge/transceiver/ibyte_sender.py` | 14 | 0 | 100%|
-| `scaracom/bridge/transceiver/ichannel.py` | 16 | 0 | 100%|
-| `scaracom/bridge/transceiver/icommand_sender.py` | 14 | 0 | 100%|
-| `scaracom/bridge/transceiver/transceiver.py` | 43 | 0 | 100%|
+| `scaracom/bridge/transceiver/ichannel.py` | 15 | 0 | 100%|
+| `scaracom/bridge/transceiver/transceiver.py` | 32 | 0 | 100%|
 | `scaracom/flow/__init__.py` | 9 | 0 | 100%|
 | `scaracom/flow/barrier/__init__.py` | 9 | 0 | 100%|
 | `scaracom/flow/barrier/barrier.py` | 25 | 0 | 100%|
@@ -266,7 +264,7 @@ python3 setup.py install --record files.txt
 | `scaracom/transport/scanner/iport_scanner.py` | 14 | 0 | 100%|
 | `scaracom/transport/scanner/port_scanner.py` | 39 | 0 | 100%|
 | `scaracom/transport/transport.py` | 37 | 0 | 100%|
-| **Total** | 1381 | 0 | 100% |
+| **Total** | 1339 | 0 | 100% |
 
 </details>
 

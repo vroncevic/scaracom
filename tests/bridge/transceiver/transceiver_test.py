@@ -31,7 +31,7 @@ __author__ = 'Vladimir Roncevic'
 __copyright__ = '(C) 2026, https://vroncevic.github.io/scaracom'
 __credits__ = ['Vladimir Roncevic', 'Python Software Foundation']
 __license__ = 'https://github.com/vroncevic/scaracom/blob/dev/LICENSE'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __maintainer__ = 'Vladimir Roncevic'
 __email__ = 'elektron.ronca@gmail.com'
 __status__ = 'Updated'
@@ -54,47 +54,6 @@ class RawTransceiverTestCase(TestCase):
 
         mock_transport.is_connected.return_value = False
         self.assertFalse(transceiver.is_connected())
-
-    def test_send_raw_command_not_connected(self) -> None:
-        '''
-            Verifies send_raw_command returns False when disconnected.
-        '''
-        mock_transport = Mock()
-        mock_transport.is_connected.return_value = False
-        deps = TransceiverDependencies(transport=mock_transport, listener=Mock())
-        transceiver = RawTransceiver(deps)
-        self.assertFalse(transceiver.send_raw_command('G0 X0 Y0'))
-
-    def test_send_raw_command_success(self) -> None:
-        '''
-            Verifies send_raw_command logs TX and writes newline terminated bytes.
-        '''
-        mock_transport = Mock()
-        mock_transport.is_connected.return_value = True
-        mock_transport.write_bytes.return_value = True
-        mock_listener = Mock()
-        deps = TransceiverDependencies(transport=mock_transport, listener=mock_listener)
-        transceiver = RawTransceiver(deps)
-
-        result = transceiver.send_raw_command('  G0 X10 Y20  ')
-        self.assertTrue(result)
-        mock_listener.on_log_emitted.assert_called_with('[TX]: G0 X10 Y20', True)
-        mock_transport.write_bytes.assert_called_with(b'G0 X10 Y20\n')
-
-    def test_send_raw_command_exception_handled(self) -> None:
-        '''
-            Verifies send_raw_command logs error and returns False on exception.
-        '''
-        mock_transport = Mock()
-        mock_transport.is_connected.return_value = True
-        mock_transport.write_bytes.side_effect = IOError('Write error')
-        mock_listener = Mock()
-        deps = TransceiverDependencies(transport=mock_transport, listener=mock_listener)
-        transceiver = RawTransceiver(deps)
-
-        result = transceiver.send_raw_command('CMD')
-        self.assertFalse(result)
-        mock_listener.on_log_emitted.assert_called_with('[ERR]: Send error: Write error', False)
 
     def test_send_raw_bytes_not_connected(self) -> None:
         '''
@@ -143,4 +102,4 @@ class RawTransceiverTestCase(TestCase):
         '''
         deps = TransceiverDependencies(transport=Mock(), listener=Mock())
         transceiver = RawTransceiver(deps)
-        self.assertEqual(transceiver.get_version(), '1.0.1')
+        self.assertEqual(transceiver.get_version(), '1.0.2')
